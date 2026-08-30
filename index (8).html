@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>김홍기 ♥ 김진희 결혼합니다</title>
+
+<!-- ── 예식 일시(단일 소스) + 날짜 게이트 클래스를 DOM 파싱 전에 즉시 부여 (레이아웃 시프트 방지) ── -->
+<script>
+(function(){
+  window.WEDDING_DATE = '2027-01-30'; /* YYYY-MM-DD — 본문 스크립트도 이 값을 참조합니다 */
+  window.WEDDING_TIME = '15:10';      /* HH:MM (24시간제) */
+  var wdt = new Date(window.WEDDING_DATE + 'T' + window.WEDDING_TIME + ':00');
+  var now = new Date();
+  var postThreshold = new Date(wdt.getTime() + 7*86400000);  /* D+7 */
+  /* 마음 전하실 곳은 현재 시점부터 바로 열립니다. D+7 이후에만 안내를 종료합니다. */
+  var gateClass = (now > postThreshold) ? 'post-wedding' : 'gift-active';
+  document.documentElement.classList.add(gateClass);
+})();
+</script>
+<meta name="description" content="라마다 서울 신도림 호텔 · 2027.01.30 PM 3:10">
+
+<!-- ── OG 태그 (카카오톡·SNS 공유 시 표시) ── -->
+<meta property="og:title" content="김홍기 ♥ 김진희 결혼합니다">
+<meta property="og:description" content="라마다 서울 신도림 호텔 · 2027.01.30 PM 3:10">
+<meta property="og:image" content="./모청_포스터.jpg">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ══════════════════════════════════════════
+     디자인 토큰 — 색상 · 타이포 · 레이아웃 변수
+     "비 오는 숲, 걷히는 안개" 컨셉
+     ══════════════════════════════════════════ */
+  :root{
+    --c-mist:      #EDEEE7;   /* 배경 — 안개 낀 아이보리 */
+    --c-paper:     #FFFFFF;   /* 카드 배경 */
+    --c-forest:    #45543F;   /* 짙은 이끼그린 — 포인트/버튼 */
+    --c-forest-d:  #2E3A2A;   /* 더 짙은 그린 — 히어로 오버레이 */
+    --c-rain:      #8D98A0;   /* 빗빛 블루그레이 — 보더/디바이더 */
+    --c-rain-soft: rgba(141,152,160,0.28);
+    --c-blossom:   #C98079;   /* 부케 더스티로즈 — 은은한 포인트 */
+    --c-ink:       #2B2E28;   /* 본문 텍스트 */
+    --c-ink-soft:  #6B7268;   /* 보조 텍스트 */
+    --c-line:      rgba(43,46,40,0.10);
+
+    --f-display: 'Noto Serif KR', serif;
+    --f-body:    'Noto Sans KR', sans-serif;
+
+    --card-w: 480px;
+    --radius: 2px;
+    --ease: cubic-bezier(.22,.8,.32,1);
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  html{ scroll-behavior:smooth; }
+  body{
+    font-family:var(--f-body);
+    background:var(--c-mist);
+    color:var(--c-ink);
+    display:flex; justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+  }
+
+  .frame{
+    width:100%; max-width:var(--card-w);
+    min-height:100vh;
+    background:var(--c-mist);
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 0 60px rgba(0,0,0,0.12);
+  }
+
+  /* ── 로딩 화면: 담백한 페이드 인 ── */
+  #loading{
+    position:fixed; inset:0; max-width:var(--card-w); margin:0 auto;
+    background:var(--c-forest-d);
+    z-index:9999;
+    display:flex; align-items:center; justify-content:center;
+    transition:opacity 1s var(--ease), visibility 1s var(--ease);
+    overflow:hidden;
+  }
+  #loading.hide{ opacity:0; visibility:hidden; pointer-events:none; }
+  #loading-text{
+    position:relative; z-index:2;
+    font-family:var(--f-display); font-style:italic; font-weight:500;
+    color:#EDEEE7; font-size:15px; letter-spacing:0.14em;
+    opacity:0; animation:fadeUp 1.4s var(--ease) 0.4s forwards;
+  }
+  @keyframes fadeUp{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ── 공통 섹션 ── */
+  section{ position:relative; padding:64px 32px; }
+  .eyebrow{
+    font-family:var(--f-display); font-style:italic; font-weight:500;
+    font-size:13px; letter-spacing:0.14em; color:var(--c-blossom);
+    display:block; margin-bottom:10px; text-align:center;
+  }
+  .heading{
+    font-family:var(--f-display); font-weight:600; font-size:22px;
+    letter-spacing:0.01em; text-align:center; color:var(--c-ink);
+    margin-bottom:6px; line-height:1.5;
+  }
+  .sub{ text-align:center; color:var(--c-ink-soft); font-size:13.5px; line-height:1.9; }
+
+  /* 빗방울 디바이더 — 숫자 대신 사용하는 시그니처 구분선 */
+  .divider{ display:flex; align-items:center; justify-content:center; gap:14px; padding:0 0 4px; }
+  .divider::before, .divider::after{ content:''; height:1px; width:56px; background:var(--c-line); }
+  .divider svg{ width:9px; height:12px; opacity:0.55; }
+
+  /* ══════════ HERO ══════════ */
+  #hero{
+    position:relative; height:100vh; min-height:640px;
+    padding:0; display:flex; align-items:flex-end;
+    overflow:hidden;
+  }
+  #hero .hero-img{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; object-position:center 30%;
+    transform:scale(1.06);
+    animation:heroIn 2.4s var(--ease) forwards;
+  }
+  @keyframes heroIn{ from{ transform:scale(1.14); filter:brightness(0.8);} to{ transform:scale(1.06); filter:brightness(1);} }
+  #hero::after{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(46,58,42,0.05) 0%, rgba(46,58,42,0.08) 45%, rgba(28,34,25,0.72) 100%);
+  }
+  .hero-content{
+    position:relative; z-index:2; width:100%;
+    padding:0 32px 46px; text-align:center; color:#F4F5EF;
+  }
+  .hero-eyebrow{
+    font-family:var(--f-display); font-style:italic; font-size:12.5px;
+    letter-spacing:0.22em; opacity:0.86; margin-bottom:14px;
+    opacity:0; animation:fadeUp 1s var(--ease) 1.0s forwards;
+  }
+  .hero-names{
+    font-family:var(--f-display); font-weight:700; font-size:34px;
+    letter-spacing:0.02em; line-height:1.3; margin-bottom:16px;
+    opacity:0; animation:fadeUp 1s var(--ease) 1.25s forwards;
+  }
+  .hero-names .amp{ color:var(--c-blossom); font-style:italic; font-size:24px; padding:0 6px; }
+  .hero-date{
+    font-size:13px; letter-spacing:0.08em; font-weight:300; line-height:1.7;
+    opacity:0; animation:fadeUp 1s var(--ease) 1.5s forwards;
+  }
+  .hero-venue-detail{
+    font-size:11.5px; letter-spacing:0.1em; font-weight:300; opacity:0;
+    margin-top:6px; color:rgba(244,245,239,0.8);
+    animation:fadeUp 1s var(--ease) 1.7s forwards;
+  }
+  .scroll-cue{
+    position:absolute; bottom:18px; left:50%; transform:translateX(-50%);
+    z-index:2; color:#F4F5EF; opacity:0.7;
+    animation:bob 2.2s ease-in-out infinite;
+  }
+  @keyframes bob{ 0%,100%{ transform:translateX(-50%) translateY(0);} 50%{ transform:translateX(-50%) translateY(6px);} }
+
+  /* BGM 컨트롤 (좌하단 고정 pill) */
+  #bgmToggle{
+    position:fixed; bottom:18px; left:18px; z-index:200;
+    display:flex; align-items:center; gap:7px;
+    padding:9px 14px 9px 10px; border-radius:999px;
+    background:rgba(255,255,255,0.16);
+    border:1px solid rgba(255,255,255,0.4);
+    backdrop-filter:blur(6px);
+    cursor:pointer; color:#fff; transition:background 0.3s, border-color 0.3s, color 0.3s;
+    font-family:var(--f-body); font-size:11px; letter-spacing:0.02em;
+  }
+  #bgmToggle.dark{ background:rgba(43,46,40,0.06); border-color:rgba(43,46,40,0.2); color:var(--c-ink-soft); }
+  #bgmToggle .disc{ width:16px; height:16px; flex:none; animation:spin 3.2s linear infinite; animation-play-state:paused; }
+  #bgmToggle.playing .disc{ animation-play-state:running; }
+  @keyframes spin{ from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
+
+  /* 맨 위로 가기 (우하단) */
+  #toTop{
+    position:fixed; bottom:18px; right:18px; z-index:200;
+    width:42px; height:42px; border-radius:50%;
+    background:var(--c-forest); color:#fff; border:none;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    opacity:0; visibility:hidden; transform:translateY(8px);
+    transition:opacity 0.3s var(--ease), transform 0.3s var(--ease), visibility 0.3s;
+    box-shadow:0 4px 14px rgba(0,0,0,0.18);
+  }
+  #toTop.show{ opacity:1; visibility:visible; transform:translateY(0); }
+  #toTop svg{ width:15px; height:15px; }
+
+  /* ══════════ 초대의 글 ══════════ */
+  #invite .heading{ font-size:19px; line-height:2; margin:22px 0 30px; font-weight:400; }
+  .family-line{ display:flex; justify-content:center; gap:10px; font-size:14.5px; color:var(--c-ink-soft); margin-bottom:6px; }
+  .family-line b{ color:var(--c-ink); font-weight:500; }
+  .parents{
+    display:grid; grid-template-columns:max-content max-content max-content;
+    justify-content:center; align-items:baseline; row-gap:8px; column-gap:8px; margin-top:26px;
+  }
+  .parent-row{ display:contents; }
+  .parent-row b{ color:var(--c-ink); font-weight:600; }
+  .parent-row .p-names{ text-align:right; font-size:14px; color:var(--c-ink-soft); letter-spacing:0.01em; white-space:nowrap; }
+  .parent-row .p-child{ text-align:left; font-size:14px; color:var(--c-ink-soft); letter-spacing:0.01em; white-space:nowrap; }
+  .parent-row .role{ font-size:11px; color:var(--c-blossom); letter-spacing:0.08em; text-align:center; }
+
+  /* ══════════ 예식 일시 + 카운트다운 ══════════ */
+  #when{ background:var(--c-paper); }
+  .date-big{
+    text-align:center; font-family:var(--f-display); font-weight:700;
+    font-size:26px; margin:18px 0 4px; color:var(--c-forest);
+  }
+  .time-small{ text-align:center; font-size:13px; color:var(--c-ink-soft); margin-bottom:32px; letter-spacing:0.04em; }
+
+  .countdown{ display:flex; justify-content:center; gap:10px; margin-top:8px; }
+  .cd-cell{
+    width:64px; padding:14px 0; text-align:center;
+    background:var(--c-mist); border-radius:var(--radius);
+    border:1px solid var(--c-line);
+  }
+  .cd-num{ font-family:var(--f-display); font-weight:700; font-size:20px; color:var(--c-forest); }
+  .cd-label{ font-size:10px; color:var(--c-ink-soft); letter-spacing:0.08em; margin-top:4px; }
+
+  /* 캘린더 */
+  .calendar{ margin:38px auto 0; max-width:300px; }
+  .cal-head{ text-align:center; font-family:var(--f-display); font-size:14px; letter-spacing:0.1em; margin-bottom:14px; color:var(--c-ink); }
+  .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:4px 0; }
+  .cal-dow{ text-align:center; font-size:10.5px; color:var(--c-ink-soft); padding-bottom:8px; letter-spacing:0.03em; }
+  .cal-dow.sun{ color:var(--c-blossom); }
+  .cal-day{ text-align:center; font-size:12.5px; padding:7px 0; color:var(--c-ink); position:relative; }
+  .cal-day.sun{ color:var(--c-blossom); }
+  .cal-day.blank{ visibility:hidden; }
+  .cal-day.is-wedding{ color:#fff; font-weight:700; }
+  .cal-day.is-wedding::before{
+    content:''; position:absolute; inset:2px 6px; margin:auto; width:26px; height:26px;
+    background:var(--c-forest); border-radius:50%; z-index:0;
+  }
+  .cal-day.is-wedding span{ position:relative; z-index:1; }
+  .cal-note{ text-align:center; font-size:11.5px; color:var(--c-blossom); margin-top:14px; font-family:var(--f-display); font-style:italic; }
+
+  /* ══════════ 갤러리 ══════════ */
+  #gallery{ background:var(--c-mist); }
+  .gal-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-top:26px; }
+  .gal-grid img{
+    width:100%; aspect-ratio:1/1; object-fit:cover; display:block;
+    cursor:pointer; background:var(--c-line);
+    transition:opacity 0.4s var(--ease), transform 0.4s var(--ease);
+  }
+  .gal-grid img:active{ transform:scale(0.96); opacity:0.85; }
+  #galMore{
+    display:block; margin:22px auto 0; padding:11px 30px;
+    background:transparent; border:1px solid var(--c-rain); color:var(--c-ink);
+    font-family:var(--f-body); font-size:12.5px; letter-spacing:0.06em;
+    border-radius:999px; cursor:pointer;
+  }
+  #galMore:disabled{ opacity:0.4; }
+
+  /* 라이트박스 */
+  #lightbox{
+    position:fixed; inset:0; z-index:500; background:rgba(20,22,18,0.96);
+    display:none; align-items:center; justify-content:center;
+    max-width:var(--card-w); margin:0 auto;
+  }
+  #lightbox.open{ display:flex; }
+  #lightbox img{ width:100%; max-height:80vh; object-fit:contain; }
+  #lightbox .lb-close{ position:absolute; top:20px; right:22px; color:#fff; font-size:26px; background:none; border:none; cursor:pointer; line-height:1; }
+  #lightbox .lb-nav{
+    position:absolute; top:50%; transform:translateY(-50%);
+    background:rgba(255,255,255,0.12); border:none; color:#fff;
+    width:38px; height:38px; border-radius:50%; font-size:18px; cursor:pointer;
+  }
+  #lightbox .lb-prev{ left:14px; } #lightbox .lb-next{ right:14px; }
+  #lightbox .lb-count{ position:absolute; top:20px; left:0; right:0; text-align:center; color:rgba(255,255,255,0.8); font-size:12.5px; letter-spacing:0.06em; pointer-events:none; }
+
+  /* ══════════ 오시는 길 ══════════ */
+  #location{ background:var(--c-paper); }
+  .venue-name{ text-align:center; font-family:var(--f-display); font-weight:700; font-size:19px; margin-top:16px; }
+  .venue-hall{ text-align:center; font-size:13px; color:var(--c-ink-soft); margin-top:4px; }
+  .venue-addr{
+    text-align:center; font-size:12.5px; color:var(--c-ink-soft); margin-top:10px; line-height:1.7;
+  }
+  .addr-copy{
+    display:block; margin:14px auto 0; padding:8px 20px;
+    background:none; border:1px solid var(--c-line); color:var(--c-ink-soft);
+    font-size:11.5px; letter-spacing:0.04em; border-radius:999px; cursor:pointer;
+  }
+  .map-frame{
+    position:relative;
+    margin-top:26px; width:100%; height:320px; border-radius:var(--radius);
+    border:1px solid var(--c-line); background:var(--c-mist);
+    overflow:hidden;
+  }
+  .map-frame iframe, #mapContainer{ width:100%; height:100%; border:0; }
+  .map-overlay{
+    position:absolute; inset:0; z-index:2;
+    background:rgba(43,46,40,0.42);
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:12.5px; letter-spacing:0.03em; cursor:pointer;
+    transition:opacity 0.3s var(--ease);
+  }
+  .map-links{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px; }
+  .map-btn{
+    text-align:center; padding:13px 0; font-size:12.5px; letter-spacing:0.02em;
+    border-radius:var(--radius); text-decoration:none; font-weight:500; cursor:pointer; border:none;
+  }
+  .map-btn.kakao{ background:#FEE500; color:var(--c-ink); }
+  .map-btn.naver{ background:#03C75A; color:#fff; }
+  .map-btn.tmap{ background:var(--c-ink); color:#fff; }
+
+  .transport{ margin-top:34px; display:flex; flex-direction:column; gap:14px; }
+  .trans-box{
+    background:var(--c-mist); border:1px solid var(--c-line); border-radius:var(--radius);
+    padding:18px 20px;
+  }
+  .trans-title{ font-size:13px; font-weight:600; color:var(--c-ink); margin-bottom:8px; }
+  .trans-text{ font-size:12px; color:var(--c-ink-soft); line-height:1.9; }
+
+  /* ══════════ 마음 전하실 곳 (계좌) ══════════ */
+  #gift{ background:var(--c-mist); }
+
+  /* 날짜 게이트 : 예식일 D+7 이후에는 아코디언을 감추고 안내 문구만 표시 (그 전에는 현재 시점부터 바로 열립니다) */
+  .gift-message{ display:none; text-align:center; font-size:12.5px; color:var(--c-ink-soft);
+    margin-top:30px; padding:26px 20px; background:var(--c-paper); border:1px solid var(--c-line);
+    border-radius:var(--radius); line-height:1.8; }
+  html.post-wedding .gift-message{ display:block; }
+  html.post-wedding .accordion{ display:none; }
+
+  .accordion{ margin-top:24px; border-top:1px solid var(--c-line); }
+  .acc-item{ border-bottom:1px solid var(--c-line); }
+  .acc-head{
+    width:100%; background:none; border:none; text-align:left;
+    padding:18px 4px; display:flex; justify-content:space-between; align-items:center;
+    font-family:var(--f-body); font-size:14px; font-weight:500; color:var(--c-ink); cursor:pointer;
+  }
+  .acc-head .chev{ transition:transform 0.35s var(--ease); color:var(--c-ink-soft); }
+  .acc-item.open .acc-head .chev{ transform:rotate(180deg); }
+  .acc-body{ max-height:0; overflow:hidden; transition:max-height 0.4s var(--ease); }
+  .acc-item.open .acc-body{ max-height:360px; overflow-y:auto; }
+  .acc-row{
+    display:flex; justify-content:space-between; align-items:center; gap:8px;
+    padding:12px 4px; font-size:12.5px; border-top:1px solid var(--c-line);
+  }
+  .acc-row .who{ color:var(--c-ink-soft); flex:none; }
+  .acc-row .num{ color:var(--c-ink); font-weight:500; flex:1; text-align:right; }
+  .acc-row .num.warn{ color:var(--c-blossom); font-weight:400; }
+  .acc-copy{
+    background:none; border:1px solid var(--c-line); color:var(--c-ink-soft);
+    font-size:10.5px; padding:5px 10px; border-radius:999px; cursor:pointer; flex:none;
+    text-decoration:none; display:inline-block;
+  }
+  .acc-copy:disabled{ opacity:0.4; cursor:not-allowed; background:none; border-color:var(--c-line); color:var(--c-ink-soft); }
+
+  /* ══════════ 공유 ══════════ */
+  #share{ text-align:center; }
+  .share-row{ display:flex; gap:10px; justify-content:center; margin-top:22px; }
+  .share-btn{
+    width:52px; height:52px; border-radius:50%; border:1px solid var(--c-line);
+    background:var(--c-paper); display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .share-btn svg{ width:20px; height:20px; color:var(--c-ink); }
+  .share-btn.kakao{ background:#FEE500; border-color:#FEE500; }
+
+  footer{ padding:44px 32px 60px; text-align:center; }
+  footer .fname{ font-family:var(--f-display); font-style:italic; font-size:13px; color:var(--c-ink-soft); letter-spacing:0.06em; }
+  footer .fyear{ font-size:10.5px; color:var(--c-line); margin-top:6px; letter-spacing:0.08em; }
+
+  .toast{
+    position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--c-ink); color:#fff; font-size:12.5px; padding:11px 20px; border-radius:999px;
+    opacity:0; z-index:600; transition:all 0.35s var(--ease); pointer-events:none; white-space:nowrap;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ══════════ 로딩 (빗방울 리빌) ══════════ -->
+<div id="loading">
+  <div id="loading-text">김홍기 &amp; 김진희</div>
+</div>
+
+<div class="frame">
+
+  <!-- BGM 컨트롤 (좌하단) -->
+  <button id="bgmToggle" aria-label="배경음악 재생/정지">
+    <svg class="disc" viewBox="0 0 20 20" fill="none">
+      <circle cx="10" cy="10" r="8.5" stroke="currentColor" stroke-width="1.3"></circle>
+      <circle cx="10" cy="10" r="2.6" fill="currentColor"></circle>
+    </svg>
+    <span id="bgmLabel">음악 켜기</span>
+  </button>
+  <audio id="bgmAudio" loop autoplay preload="metadata"></audio>
+
+  <!-- 맨 위로 가기 (우하단) -->
+  <button id="toTop" aria-label="맨 위로 가기">
+    <svg viewBox="0 0 16 16" fill="none"><path d="M8 13V3M3 7l5-5 5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+
+  <!-- ══════════ HERO ══════════ -->
+  <section id="hero">
+    <img class="hero-img" src="./모청_포스터.jpg" alt="김홍기 · 김진희 웨딩 포스터">
+    <div class="hero-content">
+      <span class="hero-eyebrow">OUR WEDDING DAY</span>
+      <div class="hero-names">김홍기<span class="amp">&amp;</span>김진희</div>
+      <div class="hero-date">2027. 01. 30 SAT PM 3:10<br>라마다 서울 신도림 호텔</div>
+      <div class="hero-venue-detail">5층 세인트그레이스홀</div>
+    </div>
+    <div class="scroll-cue">
+      <svg width="16" height="24" viewBox="0 0 16 24" fill="none"><path d="M8 1v20M2 15l6 6 6-6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </section>
+
+  <!-- ══════════ 초대의 글 ══════════ -->
+  <section id="invite">
+    <span class="eyebrow">Invitation</span>
+    <p class="heading">
+      귀한 인연으로 만나,<br>
+      사소한 일상도 특별해지는<br>
+      평생을 함께하고자 합니다.<br><br>
+      저희의 첫걸음에 함께하시어,<br>
+      따뜻한 축복과 격려를 나눠주시면<br>
+      오래도록 감사한 마음으로<br>
+      간직하겠습니다.
+    </p>
+    <div class="parents">
+      <div class="parent-row">
+        <span class="p-names"><b>김종일</b> · <b>김진미</b>의</span>
+        <span class="role">아들</span>
+        <span class="p-child"><b>홍기</b></span>
+      </div>
+      <div class="parent-row">
+        <span class="p-names"><b>김영일</b> · <b>최문옥</b>의</span>
+        <span class="role">딸</span>
+        <span class="p-child"><b>진희</b></span>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><svg viewBox="0 0 9 12" fill="none"><path d="M4.5 0C4.5 5 0 6.5 0 9a4.5 4.5 0 009 0c0-2.5-4.5-4-4.5-9z" fill="#8D98A0"/></svg></div>
+
+  <!-- ══════════ 예식 일시 · 카운트다운 · 캘린더 ══════════ -->
+  <section id="when">
+    <span class="eyebrow">The Ceremony</span>
+    <div class="heading" style="margin-bottom:0;">예식 안내</div>
+    <div class="date-big" id="dateBig">2027년 1월 30일 토요일</div>
+    <div class="time-small" id="timeSmall">오후 3시 10분</div>
+
+    <div class="countdown" id="countdown">
+      <div class="cd-cell"><div class="cd-num" id="cdD">--</div><div class="cd-label">DAYS</div></div>
+      <div class="cd-cell"><div class="cd-num" id="cdH">--</div><div class="cd-label">HOUR</div></div>
+      <div class="cd-cell"><div class="cd-num" id="cdM">--</div><div class="cd-label">MIN</div></div>
+      <div class="cd-cell"><div class="cd-num" id="cdS">--</div><div class="cd-label">SEC</div></div>
+    </div>
+
+    <div class="calendar">
+      <div class="cal-head" id="calHead"></div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-note">초대합니다 ♥</div>
+    </div>
+  </section>
+
+  <!-- ══════════ 갤러리 ══════════ -->
+  <section id="gallery">
+    <span class="eyebrow">Our Moments</span>
+    <div class="heading">갤러리</div>
+    <p class="sub">사진을 눌러 크게 볼 수 있어요</p>
+    <div class="gal-grid" id="galGrid"></div>
+    <button id="galMore">사진 더 보기</button>
+  </section>
+
+  <!-- 라이트박스 -->
+  <div id="lightbox">
+    <button class="lb-close" aria-label="닫기">&times;</button>
+    <button class="lb-nav lb-prev" aria-label="이전 사진">&#8249;</button>
+    <img id="lbImg" src="" alt="갤러리 사진 확대">
+    <button class="lb-nav lb-next" aria-label="다음 사진">&#8250;</button>
+    <div class="lb-count" id="lbCount"></div>
+  </div>
+
+  <div class="divider"><svg viewBox="0 0 9 12" fill="none"><path d="M4.5 0C4.5 5 0 6.5 0 9a4.5 4.5 0 009 0c0-2.5-4.5-4-4.5-9z" fill="#8D98A0"/></svg></div>
+
+  <!-- ══════════ 오시는 길 ══════════ -->
+  <section id="location">
+    <span class="eyebrow">Way to Come</span>
+    <div class="heading">오시는 길</div>
+    <div class="venue-name">라마다 서울 신도림 호텔</div>
+    <div class="venue-hall">5층 세인트그레이스홀</div>
+    <div class="venue-addr" id="venueAddr">서울특별시 구로구 경인로 624</div>
+    <button class="addr-copy" id="addrCopy">주소 복사하기</button>
+
+    <div class="map-frame">
+      <!-- src는 JS에서 VENUE_NAME 기준으로 자동 생성됩니다 (API 키 불필요한 구글맵 임베드 형식) -->
+      <div id="mapContainer"></div>
+      <div class="map-overlay" id="mapOverlay"><span>터치하여 지도를 확인하세요</span></div>
+    </div>
+    <div class="map-links">
+      <a class="map-btn kakao" id="kakaoMapLink" href="#" target="_blank" rel="noopener">카카오맵</a>
+      <a class="map-btn naver" id="naverMapLink" href="#" target="_blank" rel="noopener">네이버지도</a>
+      <a class="map-btn tmap" id="tmapLink" href="#">티맵</a>
+    </div>
+
+    <div class="transport">
+      <div class="trans-box">
+        <div class="trans-title">① 지하철 이용 시</div>
+        <p class="trans-text">
+          1·2호선 신도림역 1번 출구 도보 5분<br>
+          (1번 출구 앞 셔틀버스 상시 운영)<br>
+          1호선 구로역 3번 출구 도보 10분
+        </p>
+      </div>
+      <div class="trans-box">
+        <div class="trans-title">② 자차 이용 시</div>
+        <p class="trans-text">
+          내비게이션 검색어: <span id="navQuery"></span><br>
+          주차 안내: 1시간 30분 무료 (30분 초과 시 15분당 1,000원)<br>
+          유의사항: 예식 당일은 주차장이 혼잡할 수 있으니 대중교통 이용을 권장드립니다. <!-- 교체 필요 : 실제 유의사항 문구로 교체해 주세요 -->
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 마음 전하실 곳 ══════════ -->
+  <section id="gift">
+    <span class="eyebrow">With Love</span>
+    <div class="heading">마음 전하실 곳</div>
+    <p class="sub">참석이 어려우신 분들을 위해 안내드립니다</p>
+
+    <p class="gift-message" id="giftMessage"></p>
+
+    <div class="accordion" id="accordion">
+      <div class="acc-item">
+        <button class="acc-head">
+          신랑측 마음 전하기
+          <svg class="chev" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="acc-body" id="groomAccList"></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-head">
+          신부측 마음 전하기
+          <svg class="chev" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="acc-body" id="brideAccList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 공유 ══════════ -->
+  <section id="share">
+    <span class="eyebrow">Share</span>
+    <div class="heading">청첩장 공유하기</div>
+    <div class="share-row">
+      <button class="share-btn kakao" id="kakaoShare" aria-label="카카오톡 공유">
+        <svg viewBox="0 0 24 24" fill="#391B1B"><path d="M12 3C6.48 3 2 6.48 2 10.8c0 2.76 1.86 5.18 4.66 6.57-.2.75-.74 2.78-.85 3.21-.13.53.2.52.42.38.17-.11 2.72-1.85 3.83-2.6.63.09 1.28.14 1.94.14 5.52 0 10-3.48 10-7.7S17.52 3 12 3z"/></svg>
+      </button>
+      <button class="share-btn" id="linkShare" aria-label="링크 복사">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 12a3 3 0 004 0l3-3a3 3 0 10-4-4l-1 1"/><path d="M15 12a3 3 0 00-4 0l-3 3a3 3 0 004 4l1-1"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <footer>
+    <div class="fname">HONG KI &amp; JIN HEE</div>
+    <div class="fyear">2027. 01. 30.</div>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   STEP 1 — 사용자 설정값 (여기만 바꾸면 전체 반영됩니다)
+   ══════════════════════════════════════════════════ */
+
+/* ── 배포 URL (OG 태그·카카오 공유에만 사용) ── */
+const SITE_URL = 'https://ourweddinginvitation-0130jhk.vercel.app'; /* 실제 배포 주소로 교체 완료 */
+
+/* ── OG 이미지 (SNS·카카오톡 공유 시 표시되는 썸네일) ── */
+const OG_IMAGE = SITE_URL + '/모청_포스터.jpg';
+
+/* ── Hero 이미지 파일명 (저장소 루트, 상대경로) ── */
+const HERO_IMAGE = './모청_포스터.jpg';
+
+/* ── BGM 파일명 (확장자 포함, 저장소 루트에 위치) ── */
+const BGM_FILE = './bgm.mp3';
+
+/* ── 갤러리 : 사진 총 개수 및 파일명 규칙 ── */
+/* 저장소 루트(다른 파일들과 같은 폴더)에 "사진 (1).jpg" ~ "사진 (33).jpg"로 넣어주세요 */
+const GALLERY_COUNT  = 33;
+const GALLERY_PREFIX = '사진 (';  /* 파일명 접두어 (사진과 괄호 사이 공백 포함) */
+const GALLERY_SUFFIX = ').jpg';   /* 파일명 접미어 (확장자 포함) */
+
+/* ── 신랑·신부 기본 정보 ── */
+const GROOM_NAME    = '김홍기';
+const BRIDE_NAME    = '김진희';
+const GROOM_PARENTS = '김종일·김진미';
+const BRIDE_PARENTS = '김영일·최문옥';
+const GROOM_ORDER   = '아들';
+const BRIDE_ORDER   = '딸';
+
+/* ── 예식 일시 (단일 소스는 <head>의 인라인 스크립트 — 여기서는 그 값을 그대로 읽습니다) ── */
+const WEDDING_DATE = window.WEDDING_DATE; /* YYYY-MM-DD */
+const WEDDING_TIME = window.WEDDING_TIME; /* HH:MM (24시간제) */
+
+/* ── 예식장 정보 ── */
+const VENUE_NAME = '라마다 서울 신도림 호텔';
+const VENUE_HALL = '5층 세인트그레이스홀';
+const VENUE_ADDR = '서울특별시 구로구 경인로 624';
+
+/* ── 외부 서비스 (※ 1탄 배포 시에는 빈칸으로 두세요. 2탄에서 채웁니다!) ── */
+const GAS_URL   = ''; /* 교체 필요(2탄) : 구글 앱스 스크립트 배포 URL (마음 전하실 곳 계좌 정보 연동) */
+const KAKAO_KEY = '005b58fe1a5c800209fa77bba86acfab'; /* 카카오 JavaScript 키 — 카카오톡 공유하기 + 오시는 길 지도 미리보기에 함께 사용됩니다 */
+const DRIVE_URL = ''; /* 교체 필요(2탄) : 구글 드라이브 폴더 URL (하객 사진 업로드) */
+
+/* ── 마음 전하실 곳 계좌 정보 (GAS_URL 미연동 시 아래 값이 표시됩니다) ── */
+const ACCOUNTS_DATA = {
+  groom: [
+    { label:'신랑 아버지', name:'김종일', bank:'농협은행', number:'802-02-113548' },
+    { label:'신랑 어머니', name:'김진미', bank:'국민은행', number:'497802-01-171860' },
+    { label:'신랑',       name:'김홍기', bank:'케이뱅크', number:'100-203-876635' }
+  ],
+  bride: [
+    { label:'신부 아버지', name:'김영일', bank:'국민은행', number:'757-21-0024-199' },
+    { label:'신부 어머니', name:'최문옥', bank:'국민은행', number:'535902-01-236731' },
+    { label:'신부',       name:'김진희', bank:'신한은행', number:'110-416-850992' }
+  ]
+};
+
+/* ══════════════════════════════════════════════════
+   내부 로직 — 위 상수만 참조하며, 날짜를 하드코딩하지 않습니다
+   ══════════════════════════════════════════════════ */
+(function(){
+
+  const weddingDateTime = new Date(WEDDING_DATE + 'T' + WEDDING_TIME + ':00');
+
+  /* ---------- 로딩 화면 ---------- */
+  window.addEventListener('load', function(){
+    setTimeout(function(){
+      document.getElementById('loading').classList.add('hide');
+    }, 1900);
+  });
+
+  /* ---------- BGM 컨트롤 ---------- */
+  const audio = document.getElementById('bgmAudio');
+  const bgmBtn = document.getElementById('bgmToggle');
+  const bgmLabel = document.getElementById('bgmLabel');
+  audio.src = BGM_FILE;
+  audio.addEventListener('error', function(){
+    console.warn('[BGM] 파일을 불러오지 못했습니다:', BGM_FILE);
+  });
+
+  function setPlayingUI(isPlaying){
+    bgmBtn.classList.toggle('playing', isPlaying);
+    bgmLabel.textContent = isPlaying ? '음악 끄기' : '음악 켜기';
+  }
+
+  function tryAutoplay(){
+    audio.play().then(function(){ setPlayingUI(true); }).catch(function(){ setPlayingUI(false); });
+  }
+  window.addEventListener('load', function(){ setTimeout(tryAutoplay, 300); });
+
+  /* 자동재생이 브라우저 정책으로 막히면 첫 사용자 제스처에서 재생을 재시도 */
+  function firstGestureRetry(){
+    if(!audio.paused) return;
+    audio.play().then(function(){ setPlayingUI(true); }).catch(function(){});
+  }
+  ['touchstart','click','scroll'].forEach(function(evt){
+    window.addEventListener(evt, firstGestureRetry, { once:true, passive:true });
+  });
+
+  bgmBtn.addEventListener('click', function(){
+    if(audio.paused){
+      audio.play().then(function(){ setPlayingUI(true); }).catch(function(){});
+    } else {
+      audio.pause();
+      setPlayingUI(false);
+    }
+  });
+
+  /* 탭이 비활성화되면 일시정지, 복귀 시 재생 중이었다면 자동 재개 */
+  let wasPlayingBeforeHide = false;
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden){
+      wasPlayingBeforeHide = !audio.paused;
+      if(wasPlayingBeforeHide) audio.pause();
+    } else if(wasPlayingBeforeHide){
+      audio.play().then(function(){ setPlayingUI(true); }).catch(function(){});
+    }
+  });
+
+  /* 히어로를 지나면 버튼 색상을 어둡게 전환 (밝은 배경 대비) */
+  const heroEl = document.getElementById('hero');
+  const io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      bgmBtn.classList.toggle('dark', !e.isIntersecting);
+    });
+  }, { threshold: 0.15 });
+  io.observe(heroEl);
+
+  /* ---------- 예식 안내 텍스트 (날짜 자동 생성) ---------- */
+  const weekdayKR = ['일','월','화','수','목','금','토'];
+  const y = weddingDateTime.getFullYear();
+  const m = weddingDateTime.getMonth() + 1;
+  const d = weddingDateTime.getDate();
+  const wd = weekdayKR[weddingDateTime.getDay()];
+  document.getElementById('dateBig').textContent = y + '년 ' + m + '월 ' + d + '일 ' + wd + '요일';
+
+  let hh = weddingDateTime.getHours();
+  const mm = weddingDateTime.getMinutes();
+  const ampm = hh < 12 ? '오전' : '오후';
+  let hh12 = hh % 12; if(hh12 === 0) hh12 = 12;
+  document.getElementById('timeSmall').textContent = ampm + ' ' + hh12 + '시' + (mm > 0 ? ' ' + mm + '분' : '');
+
+  document.getElementById('venueAddr').textContent = VENUE_ADDR;
+
+  /* ---------- 카운트다운 ---------- */
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function tickCountdown(){
+    const now = new Date();
+    let diff = weddingDateTime - now;
+    if(diff < 0) diff = 0;
+    const totalSec = Math.floor(diff/1000);
+    const days = Math.floor(totalSec / 86400);
+    const hours = Math.floor((totalSec % 86400) / 3600);
+    const mins = Math.floor((totalSec % 3600) / 60);
+    const secs = totalSec % 60;
+    document.getElementById('cdD').textContent = days;
+    document.getElementById('cdH').textContent = pad(hours);
+    document.getElementById('cdM').textContent = pad(mins);
+    document.getElementById('cdS').textContent = pad(secs);
+  }
+  tickCountdown();
+  setInterval(tickCountdown, 1000);
+
+  /* ---------- 캘린더 ---------- */
+  const calYear = weddingDateTime.getFullYear();
+  const calMonth = weddingDateTime.getMonth(); // 0-indexed
+  document.getElementById('calHead').textContent = calYear + '. ' + (calMonth+1);
+
+  const calGrid = document.getElementById('calGrid');
+  ['일','월','화','수','목','금','토'].forEach(function(dow, i){
+    const el = document.createElement('div');
+    el.className = 'cal-dow' + (i===0 ? ' sun' : '');
+    el.textContent = dow;
+    calGrid.appendChild(el);
+  });
+
+  const firstDow = new Date(calYear, calMonth, 1).getDay();
+  const lastDate = new Date(calYear, calMonth + 1, 0).getDate();
+  for(let i = 0; i < firstDow; i++){
+    const blank = document.createElement('div');
+    blank.className = 'cal-day blank';
+    calGrid.appendChild(blank);
+  }
+  for(let dnum = 1; dnum <= lastDate; dnum++){
+    const cell = document.createElement('div');
+    const dow = new Date(calYear, calMonth, dnum).getDay();
+    cell.className = 'cal-day' + (dow === 0 ? ' sun' : '');
+    if(dnum === weddingDateTime.getDate()){
+      cell.className += ' is-wedding';
+      cell.innerHTML = '<span>' + dnum + '</span>';
+    } else {
+      cell.textContent = dnum;
+    }
+    calGrid.appendChild(cell);
+  }
+
+  /* ---------- 갤러리 ---------- */
+  const galGrid = document.getElementById('galGrid');
+  const galMoreBtn = document.getElementById('galMore');
+  const PAGE_SIZE = 9;
+  let loaded = 0;
+  const galSources = [];
+  for(let i = 1; i <= GALLERY_COUNT; i++){
+    galSources.push('./' + GALLERY_PREFIX + i + GALLERY_SUFFIX);
+  }
+
+  function placeholderSVG(n){
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">' +
+      '<rect width="300" height="300" fill="#EDEEE7"/>' +
+      '<text x="50%" y="50%" font-family="sans-serif" font-size="18" fill="#6B7268" text-anchor="middle" dominant-baseline="middle">Photo ' + n + '</text>' +
+      '</svg>';
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+  }
+
+  function renderMore(){
+    const next = Math.min(loaded + PAGE_SIZE, galSources.length);
+    for(let i = loaded; i < next; i++){
+      const img = document.createElement('img');
+      img.src = galSources[i];
+      img.loading = 'lazy';
+      img.alt = '갤러리 사진 ' + (i+1);
+      img.dataset.idx = i;
+      img.onerror = function(){
+        this.onerror = null;
+        this.src = placeholderSVG(i+1);
+      };
+      img.addEventListener('click', function(){ openLightbox(i); });
+      galGrid.appendChild(img);
+    }
+    loaded = next;
+    if(loaded >= galSources.length){
+      galMoreBtn.disabled = true;
+      galMoreBtn.textContent = '모든 사진을 확인했어요';
+    }
+  }
+  renderMore();
+  galMoreBtn.addEventListener('click', renderMore);
+
+  /* ---------- 라이트박스 ---------- */
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbCount = document.getElementById('lbCount');
+  let lbIndex = 0;
+
+  function closeLightbox(){ lightbox.classList.remove('open'); }
+  function openLightbox(i){
+    lbIndex = i;
+    updateLightbox();
+    lightbox.classList.add('open');
+  }
+  function updateLightbox(){
+    lbImg.onerror = function(){ this.onerror = null; this.src = placeholderSVG(lbIndex+1); };
+    lbImg.src = galSources[lbIndex];
+    lbCount.textContent = (lbIndex + 1) + ' / 전체 ' + galSources.length;
+  }
+  document.querySelector('.lb-close').addEventListener('click', closeLightbox);
+  document.querySelector('.lb-prev').addEventListener('click', function(){ lbIndex = (lbIndex - 1 + galSources.length) % galSources.length; updateLightbox(); });
+  document.querySelector('.lb-next').addEventListener('click', function(){ lbIndex = (lbIndex + 1) % galSources.length; updateLightbox(); });
+  lightbox.addEventListener('click', function(e){ if(e.target === lightbox) closeLightbox(); });
+
+  document.addEventListener('keydown', function(e){
+    if(!lightbox.classList.contains('open')) return;
+    if(e.key === 'Escape') closeLightbox();
+    else if(e.key === 'ArrowLeft'){ lbIndex = (lbIndex - 1 + galSources.length) % galSources.length; updateLightbox(); }
+    else if(e.key === 'ArrowRight'){ lbIndex = (lbIndex + 1) % galSources.length; updateLightbox(); }
+  });
+
+  let touchStartX = 0, touchStartY = 0;
+  lightbox.addEventListener('touchstart', function(e){
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, {passive:true});
+  lightbox.addEventListener('touchend', function(e){
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    const dy = e.changedTouches[0].screenY - touchStartY;
+    if(Math.abs(dy) > 100 && Math.abs(dy) > Math.abs(dx)){
+      closeLightbox();
+      return;
+    }
+    if(Math.abs(dx) > 60){
+      if(dx < 0){ lbIndex = (lbIndex + 1) % galSources.length; } else { lbIndex = (lbIndex - 1 + galSources.length) % galSources.length; }
+      updateLightbox();
+    }
+  }, {passive:true});
+
+  /* ---------- 토스트 ---------- */
+  const toastEl = document.getElementById('toast');
+  let toastTimer = null;
+  function showToast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1800);
+  }
+
+  function copyText(text){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      return navigator.clipboard.writeText(text);
+    }
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); } catch(e){}
+    document.body.removeChild(ta);
+    return Promise.resolve();
+  }
+
+  /* ---------- 주소 복사 ---------- */
+  document.getElementById('addrCopy').addEventListener('click', function(){
+    copyText(VENUE_NAME + ' ' + VENUE_HALL + ' ' + VENUE_ADDR).then(function(){
+      showToast('주소가 복사되었습니다');
+    });
+  });
+
+  /* ---------- 지도 오버레이 : 터치 시 지도 노출 ---------- */
+  const mapOverlay = document.getElementById('mapOverlay');
+  const mapContainer = document.getElementById('mapContainer');
+
+  function showMapError(msg){
+    mapContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:16px;text-align:center;color:var(--c-ink-soft);font-size:12px;line-height:1.6;">' + msg + '</div>';
+  }
+
+  function loadKakaoMapSDK(callback){
+    if(window.kakao && window.kakao.maps && window.kakao.maps.services){ callback(); return; }
+    const script = document.createElement('script');
+    script.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=' + KAKAO_KEY + '&autoload=false&libraries=services';
+    script.onload = function(){
+      try{
+        window.kakao.maps.load(callback);
+      } catch(err){
+        showMapError('지도 스크립트 오류: ' + err.message);
+      }
+    };
+    script.onerror = function(){
+      showMapError('카카오맵 스크립트를 불러오지 못했어요 (네트워크 차단 가능성)');
+    };
+    document.head.appendChild(script);
+  }
+
+  function renderKakaoMap(){
+    let settled = false;
+    const timeoutId = setTimeout(function(){
+      if(!settled) showMapError('지도 로딩이 너무 오래 걸려요 (시간 초과)');
+    }, 6000);
+    try{
+      loadKakaoMapSDK(function(){
+        try{
+          const geocoder = new kakao.maps.services.Geocoder();
+          geocoder.addressSearch(VENUE_ADDR, function(result, status){
+            settled = true;
+            clearTimeout(timeoutId);
+            if(status === kakao.maps.services.Status.OK && result[0]){
+              const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+              const map = new kakao.maps.Map(mapContainer, { center: coords, level: 3 });
+              new kakao.maps.Marker({ map: map, position: coords });
+              /* 드래그·확대축소를 막아 정적 지도처럼 보이게 함 (원하면 지워서 인터랙티브하게 사용 가능) */
+              map.setDraggable(false);
+              map.setZoomable(false);
+            } else {
+              showMapError('주소 검색에 실패했어요 (상태: ' + status + ')');
+            }
+          });
+        } catch(err){
+          settled = true;
+          clearTimeout(timeoutId);
+          showMapError('지도 초기화 오류: ' + err.message);
+        }
+      });
+    } catch(err){
+      settled = true;
+      clearTimeout(timeoutId);
+      showMapError('지도 로드 오류: ' + err.message);
+    }
+  }
+
+  if(KAKAO_KEY){
+    mapOverlay.addEventListener('click', function(){
+      renderKakaoMap();
+      mapOverlay.remove();
+      showToast('지도를 확인해 보세요');
+    });
+  } else {
+    /* KAKAO_KEY 미설정 시 지도 대신 안내 문구만 표시 */
+    mapOverlay.querySelector('span').textContent = '지도 준비중입니다 · 아래 지도 앱 버튼을 이용해 주세요';
+    mapOverlay.style.cursor = 'default';
+  }
+
+  /* ---------- 지도 앱 딥링크 (VENUE_ADDR 상수 자동 참조) ---------- */
+  const addrEncoded = encodeURIComponent(VENUE_ADDR);
+  document.getElementById('kakaoMapLink').href = 'https://map.kakao.com/?q=' + addrEncoded;
+  document.getElementById('naverMapLink').href = 'https://map.naver.com/p/search/' + addrEncoded;
+
+  const isMobileUA = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  document.getElementById('tmapLink').addEventListener('click', function(e){
+    e.preventDefault();
+    if(!isMobileUA){
+      alert('티맵은 모바일 앱에서 실행할 수 있어요. 모바일 기기에서 다시 시도해 주세요.');
+      return;
+    }
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    const storeUrl = isAndroid
+      ? 'https://play.google.com/store/apps/details?id=com.skt.tmap.ku'
+      : 'https://apps.apple.com/kr/app/id431589174';
+    let appOpened = false;
+    const onHide = function(){ if(document.hidden) appOpened = true; };
+    document.addEventListener('visibilitychange', onHide);
+    window.location.href = 'tmap://search?name=' + addrEncoded;
+    setTimeout(function(){
+      document.removeEventListener('visibilitychange', onHide);
+      if(!appOpened){
+        /* 티맵 앱이 설치되어 있지 않으면(또는 실행에 실패하면) 스토어로 이동 */
+        window.location.href = storeUrl;
+      }
+    }, 1500);
+  });
+
+  /* ---------- 자차 안내 : 내비게이션 검색어 자동 채움 ---------- */
+  document.getElementById('navQuery').textContent = VENUE_NAME + ' (' + VENUE_ADDR + ')';
+
+  /* ---------- 마음 전하실 곳 : 날짜 안내 문구 ---------- */
+  const giftMsgEl = document.getElementById('giftMessage');
+  if(document.documentElement.classList.contains('post-wedding')){
+    giftMsgEl.textContent = '마음 전하실 곳 안내가 종료되었습니다.';
+  }
+
+  /* ---------- 계좌 정보 : GAS 선(先) 호출 ---------- */
+  let fetchedAccounts = null;
+  function prefetchAccounts(){
+    if(!GAS_URL) return; /* GAS_URL 미설정 시 조용히 스킵 — 로컬 ACCOUNTS_DATA로 대체됩니다 */
+    fetch(GAS_URL + '?action=getAccounts')
+      .then(function(res){ return res.json(); })
+      .then(function(data){ fetchedAccounts = data; })
+      .catch(function(){ /* 실패 시에도 조용히 무시하고 로컬 데이터를 사용합니다 */ });
+  }
+  prefetchAccounts();
+
+  function accountRowHTML(p){
+    const whoLabel = (p.label ? p.label + ' ' : '') + p.name;
+    if(!p.number){
+      return '<div class="acc-row"><span class="who">' + whoLabel + '</span>' +
+        '<span class="num warn">⚠ 계좌번호 미기재</span>' +
+        '<button class="acc-copy" disabled>복사</button></div>';
+    }
+    const full = p.bank + ' ' + p.number;
+    return '<div class="acc-row"><span class="who">' + whoLabel + '</span>' +
+      '<span class="num">' + full + '</span>' +
+      '<button class="acc-copy" data-account="' + full + ' ' + p.name + '">복사</button></div>';
+  }
+
+  function renderAccounts(){
+    const source = fetchedAccounts || ACCOUNTS_DATA;
+    document.getElementById('groomAccList').innerHTML = source.groom.map(accountRowHTML).join('');
+    document.getElementById('brideAccList').innerHTML = source.bride.map(accountRowHTML).join('');
+  }
+
+  /* ---------- 계좌 아코디언 (날짜 검증 후 렌더링) ---------- */
+  document.querySelectorAll('.acc-head').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      const html = document.documentElement;
+      if(html.classList.contains('post-wedding')) return;
+      renderAccounts();
+      btn.closest('.acc-item').classList.toggle('open');
+    });
+  });
+  document.getElementById('accordion').addEventListener('click', function(e){
+    const copyBtn = e.target.closest('.acc-copy');
+    if(copyBtn && !copyBtn.disabled){
+      copyText(copyBtn.dataset.account).then(function(){ showToast('계좌번호가 복사되었습니다'); });
+    }
+  });
+
+  /* ---------- 맨 위로 가기 ---------- */
+  const toTopBtn = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    toTopBtn.classList.toggle('show', window.pageYOffset > 300);
+  });
+  toTopBtn.addEventListener('click', function(){
+    window.scrollTo({ top:0, behavior:'smooth' });
+  });
+
+  /* ---------- 공유 ---------- */
+  /* 청첩장 주소 복사 : navigator.clipboard 우선, execCommand 폴백 (copyText가 이미 처리) */
+  function cpUrl(){
+    copyText(location.href).then(function(){ showToast('링크가 복사되었습니다'); });
+  }
+
+  document.getElementById('linkShare').addEventListener('click', cpUrl);
+
+  document.getElementById('kakaoShare').addEventListener('click', function(){
+    if(KAKAO_KEY && window.Kakao){
+      if(!window.Kakao.isInitialized()) window.Kakao.init(KAKAO_KEY);
+      window.Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+          title: GROOM_NAME + ' ♥ ' + BRIDE_NAME + ' 결혼합니다',
+          description: VENUE_NAME + ' · ' + y + '.' + String(m).padStart(2,'0') + '.' + String(d).padStart(2,'0') + ' ' + (ampm === '오후' ? 'PM' : 'AM') + ' ' + hh12 + ':' + String(mm).padStart(2,'0'),
+          imageUrl: OG_IMAGE,
+          link: { mobileWebUrl: SITE_URL, webUrl: SITE_URL }
+        }
+      });
+    } else {
+      /* 교체 필요(2탄) : KAKAO_KEY 미설정이거나 SDK 미로드 시 링크 복사로 대체됩니다 */
+      cpUrl();
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
